@@ -1,38 +1,24 @@
 # Best Practices in Go
 
-I am starting my journey to become expert backend developer. With increasing popularity of golang to create highly responsive server - me being from mobile background where resposiveness is must - I am sharing my journey with you all. Here, I referred lot of articles available on web beacuse as the saying goes "Never invent the wheel".
+I am starting my journey to become expert backend developer. With increasing popularity of golang to create highly responsive server - me being from mobile background where resposiveness is must - I am sharing my journey with you all. Here, I referred lot of articles available on web beacuse as the saying goes "Never invent the wheel, rather use it".
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+This project uses docker to build the application. Running application:
 
-### Prerequisites
+### Running Using docker
 
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
-
-### Installing
-
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
+Use following command to run the app
 
 ```
-Give the example
+docker build ./
+docker run -it -p 8080:8080 -v [path-of-app] [image-id]
 ```
 
-And repeat
+## Best Practices
+We will use 3 principles to write code : simple, readable and maintainable. Lets visit different aspect of development process:
 
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
+## Error handling
 
 Explain how to run the automated tests for this system
 

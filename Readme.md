@@ -1,6 +1,6 @@
 # Best Practices in Go
 
-One Paragraph of project description goes here
+I am starting my journey to become expert backend developer. With increasing popularity of golang to create highly responsive server - me being from mobile background where resposiveness is must - I am sharing my journey with you all. Here, I referred lot of articles available on web beacuse as the saying goes "Never invent the wheel".
 
 ## Getting Started
 

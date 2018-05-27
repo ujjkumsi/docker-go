@@ -20,7 +20,19 @@ We will use 3 principles to write code : simple, readable and maintainable. Lets
 
 ## Error handling
 
-Explain how to run the automated tests for this system
+In go, anything that implements Error interface can be used as error. For example
+
+```
+type error interface {
+    Error() string
+}
+```
+
+While we handle error, few dont's we have to remember:
+* Do not nest error
+* Don't write logic between throwing error and consuming it.
+
+
 
 ### Break down into end to end tests
 

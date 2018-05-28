@@ -4,6 +4,9 @@ ARG app_env
 ENV APP_ENV $app_env
 
 COPY ./app /go/src/github.com/ujjkumsi/docker-go/app
+COPY ./best-practices /go/src/github.com/ujjkumsi/docker-go/best-practices
+COPY ./models /go/src/github.com/ujjkumsi/docker-go/models
+COPY ./dao /go/src/github.com/ujjkumsi/docker-go/dao
 WORKDIR /go/src/github.com/ujjkumsi/docker-go/app
 
 RUN go get ./

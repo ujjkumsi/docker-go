@@ -1,23 +1,73 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 
-	"github.com/julienschmidt/httprouter"
+	"github.com/gocql/gocql"
+	"github.com/gorilla/mux"
 	eh "github.com/ujjkumsi/docker-go/best-practices"
+	"github.com/ujjkumsi/docker-go/dao"
+	"github.com/ujjkumsi/docker-go/models"
 )
 
-func indexHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+var moviesDao = dao.MoviesDAO{}
+
+func allMoviesEndPoint(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "not implemented yet !")
+}
+
+func findMovieEndpoint(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "not implemented yet !")
+}
+
+func createMovieEndPoint(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
+	var movie models.Movie
+	if err := json.NewDecoder(r.Body).Decode(&movie); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+	movie.ID = gocql.TimeUUID()
+
+	if err := moviesDao.Insert(movie); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	respondWithJSON(w, http.StatusCreated, movie)
+}
+
+func updateMovieEndPoint(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "not implemented yet !")
+}
+
+func deleteMovieEndPoint(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "not implemented yet !")
+}
+
+func indexHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "This is the RESTful api")
 	errorHandler()
 }
 
+func init() {
+	moviesDao.Database = "movieapi"
+	moviesDao.Server = "localhost"
+	moviesDao.Connect()
+}
+
 func main() {
-	router := httprouter.New()
-	router.GET("/", indexHandler)
+
+	r := mux.NewRouter()
+	r.HandleFunc("/", indexHandler).Methods("GET")
+	r.HandleFunc("/movies", allMoviesEndPoint).Methods("GET")
+	r.HandleFunc("/movies", createMovieEndPoint).Methods("POST")
+	r.HandleFunc("/movies", updateMovieEndPoint).Methods("PUT")
+	r.HandleFunc("/movies", deleteMovieEndPoint).Methods("DELETE")
+	r.HandleFunc("/movies/{id}", findMovieEndpoint).Methods("GET")
 
 	// print env
 	env := os.Getenv("APP_ENV")
@@ -27,7 +77,9 @@ func main() {
 		log.Println("Running api server in dev mode")
 	}
 
-	http.ListenAndServe(":8080", router)
+	if err := http.ListenAndServe(":8080", r); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func errorHandler() {
@@ -41,4 +93,15 @@ func errorHandler() {
 		}
 	}
 	fmt.Println(result)
+}
+
+func respondWithError(w http.ResponseWriter, code int, msg string) {
+	respondWithJSON(w, code, map[string]string{"error": msg})
+}
+
+func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
+	response, _ := json.Marshal(payload)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	w.Write(response)
 }

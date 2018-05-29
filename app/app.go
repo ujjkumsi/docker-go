@@ -53,16 +53,20 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	errorHandler()
 }
 
+func connectToDB(w http.ResponseWriter, r *http.Request) {
+	moviesDao.Connect()
+}
+
 func init() {
 	moviesDao.Database = "movieapi"
-	moviesDao.Server = "localhost"
-	moviesDao.Connect()
+	moviesDao.Server = "cassandra"
 }
 
 func main() {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", indexHandler).Methods("GET")
+	r.HandleFunc("/connect", connectToDB).Methods("GET")
 	r.HandleFunc("/movies", allMoviesEndPoint).Methods("GET")
 	r.HandleFunc("/movies", createMovieEndPoint).Methods("POST")
 	r.HandleFunc("/movies", updateMovieEndPoint).Methods("PUT")

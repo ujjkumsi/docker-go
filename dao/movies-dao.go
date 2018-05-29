@@ -23,6 +23,7 @@ func (m *MoviesDAO) Connect() {
 	log.Println("connecting to cassandra")
 
 	cluster := gocql.NewCluster(m.Server)
+	cluster.Port = 9042
 	cluster.ProtoVersion = 4
 	cluster.Keyspace = m.Database
 
@@ -31,8 +32,8 @@ func (m *MoviesDAO) Connect() {
 	Session = session
 
 	if err != nil {
-		log.Println("connection to cassndra failed")
-		log.Fatal(err)
+		log.Println("connection to cassandra failed")
+		return
 	}
 
 	log.Println("connected to cassandra")
@@ -53,7 +54,7 @@ func (m *MoviesDAO) FindById(id string) (models.Movie, error) {
 // Insert a movie into database
 func (m *MoviesDAO) Insert(movie models.Movie) error {
 	if err := Session.Query(
-		`INSERT INTO moviedb.movie (id, name, cover_image, description) VALUES (?, ?, ?, ?)`,
+		`INSERT INTO movieapi.movie (id, name, cover_image, description) VALUES (?, ?, ?, ?)`,
 		movie.ID, movie.Name, movie.CoverImage, movie.Description).Exec(); err != nil {
 		return err
 	}

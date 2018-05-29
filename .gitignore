@@ -2,6 +2,8 @@
 bot
 vendor
 .idea
+data/
+compose.log
 
 # User-specific stuff
 .idea/workspace.xml

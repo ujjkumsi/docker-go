@@ -18,6 +18,7 @@
 COMPOSE_LOG=${COMPOSE_LOG:false}
 
 function removeContainers() {
+  docker-compose rm -fv cassandra-seed
   docker-compose rm -fv cassandra-2
   docker-compose rm -fv cassandra-1
   docker-compose rm -fv docker-go
@@ -27,11 +28,13 @@ function removeData() {
   # [[ -e ./data ]] && rm -R ./data
   [[ -e ./cassandra-1 ]] && rm -R ./cassandra-1
   [[ -e ./cassandra-2 ]] && rm -R ./cassandra-2
+  [[ -e ./cassandra-seed ]] && rm -R ./cassandra-seed
 }
 
 function createData() {
   mkdir -p ./cassandra-1/data
-  mkdir -p ./cassandra-2_1/data
+  mkdir -p ./cassandra-2/data
+  mkdir -p ./cassandra-seed/data
 }
 
 function up() {

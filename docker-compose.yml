@@ -9,48 +9,57 @@
 version: "2"
 
 services:
-  cassandra-1:
-    hostname: cassandra-1
-    image: cassandra:latest
-    command: /bin/bash -c "sleep 1 && echo ' -- Pausing to let system catch up ... -->' && /docker-entrypoint.sh cassandra -f"
-    expose:
-      - 7000
-      - 7001
-      - 7199
-      - 9042
-      - 9160
-    volumes: # uncomment if you desire mounts, also uncomment cluster.sh
-       - ./data/cassandra-1:/var/lib/cassandra:rw
+  cassandra-seed:
+    container_name: cassandra-seed-node
+    image: cassandra:3.11.0
     ports:
-      - "9042:9042"
+      - "9042:9042"   # Native transport
+      - "7199:7199"   # JMX
+      - "9160:9160"   # Thrift clients
+    # networks:
+    #   - dc1ring
 
-  cassandra-2:
-    hostname: cassandra-2
-    image: cassandra:latest
-    command: /bin/bash -c "sleep 30 && echo ' -- Pausing to let system catch up ... -->' && /docker-entrypoint.sh cassandra -f"
+  cassandra-1:
+    image: cassandra:3.11.0
+    command: /bin/bash -c "echo 'Waiting for seed node' && sleep 30 && /docker-entrypoint.sh cassandra -f"
     environment:
-      - CASSANDRA_SEEDS=cassandra-1
-    links:
-      - cassandra-1
-    expose:
-      - 7000
-      - 7001
-      - 7199
-      - 9042
-      - 9160
-    volumes: # uncomment if you desire mounts, also uncomment cluster.sh
-      - ./data/cassandra-2:/var/lib/cassandra:rw
+      - "CASSANDRA_SEEDS=cassandra-seed-node"
+    depends_on:
+      - "cassandra-seed"
+    # networks:
+    #   - dc1ring
+
+  # you cannot have multiple nodes join the cluster at the same time when
+  # cassandra.consistent.rangemovement is true so we further delay it to give it time to stabilize
+  cassandra-2:
+    image: cassandra:3.11.0
+    command: /bin/bash -c "echo 'Waiting for seed node' && sleep 80 && /docker-entrypoint.sh cassandra -f"
+    environment:
+      - "CASSANDRA_SEEDS=cassandra-seed-node"
+    depends_on:
+      - "cassandra-seed"
+    # networks:
+    #   - dc1ring
 
   docker-go:
     build: 
       context: .
       dockerfile: Dockerfile
     links:
-      - cassandra-1:cassandra
+      - cassandra-seed:cassandra
     ports:
       - "8080:8080"
     environment:
       CASSANDRA_URL: cassandra:9042
+    # networks: 
+    #   - dc1ring
+
+# networks:
+#   dc1ring:
+#     ipam:
+#       driver: default
+#       config:
+#         - subnet: 172.30.0.0/16
 
   
 

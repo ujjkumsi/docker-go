@@ -11,6 +11,7 @@ import (
 	"github.com/gorilla/mux"
 	eh "github.com/ujjkumsi/docker-go/best-practices"
 	"github.com/ujjkumsi/docker-go/dao"
+	"github.com/ujjkumsi/docker-go/dialogflow"
 	"github.com/ujjkumsi/docker-go/models"
 )
 
@@ -53,8 +54,13 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	errorHandler()
 }
 
-func connectToDB(w http.ResponseWriter, r *http.Request) {
-	moviesDao.Connect()
+type heartbeatResponse struct {
+	Status string `json:"status"`
+	Code   int    `json:"code"`
+}
+
+func heartbeat(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode(heartbeatResponse{Status: "OK", Code: 200})
 }
 
 func init() {
@@ -65,13 +71,13 @@ func init() {
 func main() {
 
 	r := mux.NewRouter()
-	r.HandleFunc("/", indexHandler).Methods("GET")
-	r.HandleFunc("/connect", connectToDB).Methods("GET")
+	r.HandleFunc("/", heartbeat).Methods("GET")
 	r.HandleFunc("/movies", allMoviesEndPoint).Methods("GET")
 	r.HandleFunc("/movies", createMovieEndPoint).Methods("POST")
 	r.HandleFunc("/movies", updateMovieEndPoint).Methods("PUT")
 	r.HandleFunc("/movies", deleteMovieEndPoint).Methods("DELETE")
 	r.HandleFunc("/movies/{id}", findMovieEndpoint).Methods("GET")
+	r.HandleFunc("/action", dialogflow.DialogflowHandler).Methods("POST")
 
 	// print env
 	env := os.Getenv("APP_ENV")

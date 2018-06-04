@@ -22,6 +22,7 @@ function removeContainers() {
   docker-compose rm -fv cassandra-2
   docker-compose rm -fv cassandra-1
   docker-compose rm -fv docker-go
+  docker-compose rm -fv portainer
 }
 
 function removeData() {

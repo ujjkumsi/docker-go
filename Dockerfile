@@ -7,6 +7,8 @@ COPY ./app /go/src/github.com/ujjkumsi/docker-go/app
 COPY ./best-practices /go/src/github.com/ujjkumsi/docker-go/best-practices
 COPY ./models /go/src/github.com/ujjkumsi/docker-go/models
 COPY ./dao /go/src/github.com/ujjkumsi/docker-go/dao
+COPY ./dao /go/src/github.com/ujjkumsi/docker-go/util
+COPY ./dao /go/src/github.com/ujjkumsi/docker-go/dialogflow
 WORKDIR /go/src/github.com/ujjkumsi/docker-go/app
 
 RUN go get ./

@@ -1,7 +1,7 @@
-ALTER KEYSPACE system_auth WITH replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
+ALTER KEYSPACE system_auth WITH replication = { 'class' : 'SimpleStrategy', 'replication_factor' : 3 };
 DROP KEYSPACE IF EXISTS movieapi;
 CREATE KEYSPACE movieapi
-WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
+WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 3 };
 USE movieapi;
 DROP TABLE IF EXISTS movie;
 CREATE TABLE movie (

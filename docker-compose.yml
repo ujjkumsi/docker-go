@@ -6,7 +6,7 @@
 # run select on cassandra-2
 #
 
-version: "2"
+version: "3"
 
 services:
   cassandra-seed:
@@ -49,10 +49,37 @@ services:
       - cassandra-seed:cassandra
     ports:
       - "8080:8080"
+    depends_on:
+      - cassandra-seed
     environment:
       CASSANDRA_URL: cassandra:9042
     # networks: 
     #   - dc1ring
+
+  portainer:
+    image: portainer/portainer
+    command: --templates http://templates/templates.json
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./portainer-data:/data
+      # Enable you to access potainers web interface from your host machine
+      # using http://localhost:10001
+    ports:
+      - "10001:9000"
+    
+  logspout:
+    build: logspout
+    # command: syslog+tcp://logs.papertrailapp.com:$PAPERTRAIL_PORT
+    env_file:
+      - logspout/logspout.env
+    restart: always
+    ports:
+      - "8000:80"
+    volumes:
+      # security concern:
+      # https://raesene.github.io/blog/2016/03/06/The-Dangers-Of-Docker.sock/
+      # http://stackoverflow.com/questions/40844197
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 
 # networks:
 #   dc1ring:
